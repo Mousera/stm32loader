@@ -26,9 +26,17 @@ Offer support for toggling RESET and BOOT0.
 # not naming this file itself 'serial', becase that name-clashes in Python 2
 import serial
 
+try:
+    import RPi.GPIO as GPIO
+except ImportError:
+    GPIO = None
+
 
 class SerialConnection:
     """Wrap a serial.Serial connection and toggle reset and boot0."""
+
+    PIN_MAPPING_BOARD = "board"
+    PIN_MAPPING_BCM = "bcm"
 
     # pylint: disable=too-many-instance-attributes
 
@@ -46,8 +54,54 @@ class SerialConnection:
         self.reset_active_high = False
         self.boot0_active_high = False
 
+        self.can_use_custom_pins = GPIO is not None
+        self._reset_pin = None
+        self._boot0_pin = None
+        self._pin_mapping = None
+
         # call connect() to establish connection
         self.serial_connection = None
+
+    @property
+    def pin_mapping(self):
+        return self._reset_pin
+
+    @pin_mapping.setter
+    def pin_mapping(self, value):
+        if self.can_use_custom_pins:
+            if value == self.PIN_MAPPING_BOARD:
+                GPIO.setmode(GPIO.BOARD)
+            elif value == self.PIN_MAPPING_BCM:
+                GPIO.setmode(GPIO.BCM)
+            else:
+                raise ValueError("{} is not a valid pin mapping".format(value))
+            self._pin_mapping = value
+        else:
+            raise Exception("GPIO disabled")
+
+    @property
+    def reset_pin(self):
+        return self._reset_pin
+
+    @reset_pin.setter
+    def reset_pin(self, value):
+        if self.can_use_custom_pins:
+            GPIO.setup(value, GPIO.OUT)
+            self._reset_pin = value
+        else:
+            raise Exception("GPIO disabled")
+
+    @property
+    def boot0_pin(self):
+        return self._boot0_pin
+
+    @boot0_pin.setter
+    def boot0_pin(self, value):
+        if self.can_use_custom_pins:
+            GPIO.setup(value, GPIO.OUT)
+            self._boot0_pin = value
+        else:
+            raise Exception("GPIO disabled")
 
     def connect(self):
         """Connect to the RS-232 serial port."""
@@ -84,7 +138,9 @@ class SerialConnection:
         if self.reset_active_high:
             level = 1 - level
 
-        if self.swap_rts_dtr:
+        if self.enable_pin is not None:
+            GPIO.output(self.enable_pin, level)
+        elif self.swap_rts_dtr:
             self.serial_connection.setRTS(level)
         else:
             self.serial_connection.setDTR(level)
@@ -97,7 +153,9 @@ class SerialConnection:
         if not self.boot0_active_high:
             level = 1 - level
 
-        if self.swap_rts_dtr:
+        if self.boot0_pin is not None:
+            GPIO.output(self.boot0_pin, level)
+        elif self.swap_rts_dtr:
             self.serial_connection.setDTR(level)
         else:
             self.serial_connection.setRTS(level)
