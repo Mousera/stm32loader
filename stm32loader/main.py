@@ -146,10 +146,15 @@ class Stm32Loader:
         serial_connection.swap_rts_dtr = self.configuration["swap_rts_dtr"]
         serial_connection.reset_active_high = self.configuration["reset_active_high"]
         serial_connection.boot0_active_high = self.configuration["boot0_active_high"]
-        if self.configuration["boot0_pin"] is not None:
-            serial_connection.boot0_pin = self.configuration["boot0_pin"]
-        if self.configuration["reset_pin"] is not None:
-            serial_connection.reset_pin = self.configuration["reset_pin"]
+
+        boot0_pin = self.configuration["boot0_pin"]
+        reset_pin = self.configuration["reset_pin"]
+        if boot0_pin is not None or reset_pin is not None:
+            serial_connection.pin_mapping = SerialConnection.PIN_MAPPING_BCM
+            if boot0_pin is not None:
+                serial_connection.boot0_pin = reset_pin
+            if reset_pin is not None:
+                serial_connection.reset_pin = boot0_pin
 
         show_progress = self._get_progress_bar(self.configuration["hide_progress_bar"])
 
