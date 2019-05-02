@@ -152,9 +152,9 @@ class Stm32Loader:
         if boot0_pin is not None or reset_pin is not None:
             serial_connection.pin_mapping = SerialConnection.PIN_MAPPING_BCM
             if boot0_pin is not None:
-                serial_connection.boot0_pin = reset_pin
+                serial_connection.boot0_pin = boot0_pin
             if reset_pin is not None:
-                serial_connection.reset_pin = boot0_pin
+                serial_connection.reset_pin = reset_pin
 
         show_progress = self._get_progress_bar(self.configuration["hide_progress_bar"])
 
