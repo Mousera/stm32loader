@@ -32,7 +32,7 @@ except ImportError:
     GPIO = None
 
 
-class SerialConnection:
+class SerialConnection(object):
     """Wrap a serial.Serial connection and toggle reset and boot0."""
 
     PIN_MAPPING_BOARD = "board"
@@ -146,8 +146,8 @@ class SerialConnection:
         if self.reset_active_high:
             level = 1 - level
 
-        if self.enable_pin is not None:
-            GPIO.output(self.enable_pin, level)
+        if self.reset_pin is not None:
+            GPIO.output(self.reset_pin, level)
         elif self.swap_rts_dtr:
             self.serial_connection.setRTS(level)
         else:
