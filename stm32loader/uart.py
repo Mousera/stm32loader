@@ -103,6 +103,14 @@ class SerialConnection:
         else:
             raise Exception("GPIO disabled")
 
+    @property
+    def timeout(self):
+        return self.serial_connection.timeout
+
+    @timeout.setter
+    def timeout(self, value):
+        self.serial_connection.timeout = value
+
     def connect(self):
         """Connect to the RS-232 serial port."""
         self.serial_connection = serial.Serial(
