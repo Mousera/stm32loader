@@ -11,7 +11,7 @@ from setuptools import find_packages, setup
 
 # Package meta-data.
 NAME = 'stm32loader'
-VERSION = "0.4.1-dev"
+VERSION = "0.5.0"
 DESCRIPTION = 'Flash firmware to STM32 microcontrollers using Python.'
 URL = 'https://github.com/florisla/stm32loader'
 EMAIL = 'florisla@gmail.com'
@@ -66,8 +66,6 @@ setup(
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.2',
-        'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
