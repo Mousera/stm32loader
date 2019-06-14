@@ -167,3 +167,7 @@ class SerialConnection(object):
             self.serial_connection.setDTR(level)
         else:
             self.serial_connection.setRTS(level)
+
+    def flushInput(self):
+        """Flush the UART input buffer"""
+        self.serial_connection.flushInput()
